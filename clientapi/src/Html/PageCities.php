@@ -8,7 +8,8 @@ class PageCities extends AbstractPage {
     static function table(array $entities)
     {
         echo '<h1>Városok</h1>';
-        self::searchBar();
+        //self::searchBar();
+        //self::dropdownMenu();
         echo '<table id="cities-table">';
         self::tableHead();
         self::tableBody($entities);
@@ -56,19 +57,50 @@ class PageCities extends AbstractPage {
         echo '</tbody>';
     }
 
-    
+    static function dropdownMenu()
+    {
+        $counties = self::getAllCounties();
+
+        echo '<tr><td colspan="4">
+            <select name="county" id="county-dropdown">';
+            foreach ($counties as $county) {
+                echo '<option value="' . $county['id'] . '">' . $county['name'] . '</option>';
+            }
+        echo '</select>
+            <button type="button" id="btn-ok-county" title="OK"><i class="fa fa-check">OK</i></button>
+        </td></tr>';
+    }
+
     static function tableHead()
     {
+
+        $counties = self::getAllCounties();
+
         echo '<thead>
-        <tr>
-            <th class="id-col">#</th>
-            <th>Megnevezés</th>
-            <th>Műveletek&nbsp;</th>
-        </tr>
+        
+    <tr>
+        <th class="id-col">#</th>
+        <th>Megnevezés</th>
+        <th>Megye</th>
+        <th>Műveletek&nbsp;</th>
+    </tr>
+    </thead>
+    <tr>
+        <td colspan="4">
+            <select id="county-dropdown" name="county">';
+            foreach ($counties as $county) {
+                echo '<option value="' . $county['id'] . '">' . $county['name'] . '</option>';
+            }
+        echo'    </select>
+            <button type="button" id="btn-ok-county" title="OK"><i class="fa fa-check">OK</i></button>
+        </td>
+    </tr>
+    <tbody id="cities-table">
+        <!-- City rows will be populated here dynamically -->
+    </tbody>
+
         </thead>';
-        
-        
-        self::editor();
+   
     }
 
     
@@ -92,6 +124,30 @@ class PageCities extends AbstractPage {
         $response = $client->put('cities/' . $id, $data);
         return $response;
     }
+
+    static function getAllCounties(): array
+    {
+        $client = new \App\RestApiClient\Client();
+        $response = $client->get('counties');
+        return $response['data'] ?? [];
+    }
+
+    static function getAllCities(): array
+    {
+        $client = new \App\RestApiClient\Client();
+        $response = $client->get('cities');
+        return $response['data'] ?? [];
+    }
+
+    static function getCitiesByCounty($countyId) {
+        $client = new \App\RestApiClient\Client();
+        $response = $client->get("counties/$countyId/cities"); // Assuming API endpoint for fetching cities by county
+        return json_decode($response->getBody(), true);
+    }
+
+    
+        
+    
 }
 
 

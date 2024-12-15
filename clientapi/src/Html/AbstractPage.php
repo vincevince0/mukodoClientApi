@@ -16,7 +16,7 @@ abstract class AbstractPage implements PageInterface
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>Megyék</title>
             <link rel="stylesheet" href="style.css">
-            <script src="javascript.js" defer></script>
+            <script src="script.js"></script>
         </head>
         ';
     }
